@@ -1,12 +1,25 @@
 package main
 
+type MCTSRecord struct {
+	Wins, Trials int
+}
+
 type Node struct {
 	Game
 	Children []Node
+	MCTSRecord
+	Played bool
 }
 
 const MCTS_C = 0.3
 
-type MCTSRecrod struct {
-	Wins, Trials int
+// String
+
+func (n Node) String() string {
+	/*
+	str := make([]byte)
+	n.Board
+	n.Children
+	*/
+	return ""
 }

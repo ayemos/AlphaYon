@@ -22,6 +22,8 @@ type Board struct {
 	PinsHeights [][]int
 	History     []Coord
 	Turns       int
+	Frees       []Coord
+	FreesCount  int
 }
 
 func hoge() {
@@ -41,6 +43,26 @@ func (b *Board) push(x, y int, c Color) (err error) {
 	return nil
 }
 
+// push one stone to f-th free space
+func (b *Board) pushFree(f int, c Color) (err error) {
+	x := b.Frees[f].X
+	y := b.Frees[f].Y
+
+	err = b.push(x, y, c)
+	if err != nil {
+		return err
+	}
+
+	// position (x, y) was filled
+	if b.PinsHeights[x][y] == b.Radius {
+		b.FreesCount--
+		b.Frees[f] = b.Frees[b.FreesCount]
+	}
+
+	return nil
+}
+
+// Undo-ing and managing Free spaces isn't working together
 func (b *Board) undo() (err error) {
 	if b.Turns == 0 {
 		return fmt.Errorf("History is Empty\n")
@@ -77,12 +99,19 @@ func NewBoard(radius int) *Board {
 		pinsHeights[x] = make([]int, radius)
 	}
 
+	frees := make([]Coord, radius*radius)
+	for x, _ := range frees {
+		frees[x] = Coord{x % radius, x / radius}
+	}
+
 	board := &Board{
 		Radius:      radius,
 		Pins:        pins,
 		PinsHeights: pinsHeights,
 		History:     make([]Coord, radius*radius*radius),
 		Turns:       0,
+		Frees:       frees,
+		FreesCount:  radius * radius,
 	}
 
 	return board
@@ -120,7 +149,7 @@ func (c Color) String() string {
 }
 
 func (b Board) String() string {
-	str := make([]byte, 1000, b.Radius*b.Radius*b.Radius+1000)
+	str := make([]byte, 0, 2*b.Radius*b.Radius*b.Radius + b.Radius + b.Radius*b.Radius)
 
 	for z := b.Radius - 1; z >= 0; z-- {
 		str = append(str, '\n')
