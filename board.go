@@ -17,11 +17,15 @@ const (
 )
 
 type Board struct {
-	Radius       int
-	Pins		[][][]Color
-	PinsHeights	[][]int
-	History		[]Coord
-	Turns		int
+	Radius      int
+	Pins        [][][]Color
+	PinsHeights [][]int
+	History     []Coord
+	Turns       int
+}
+
+func hoge() {
+	fmt.Println("hoge!")
 }
 
 func (b *Board) push(x, y int, c Color) (err error) {
@@ -37,11 +41,10 @@ func (b *Board) push(x, y int, c Color) (err error) {
 	return nil
 }
 
-func (b *Board) undo() (err error){
+func (b *Board) undo() (err error) {
 	if b.Turns == 0 {
 		return fmt.Errorf("History is Empty\n")
 	}
-
 
 	b.Turns--
 
@@ -75,21 +78,14 @@ func NewBoard(radius int) *Board {
 	}
 
 	board := &Board{
-		Radius: radius,
-		Pins: pins,
+		Radius:      radius,
+		Pins:        pins,
 		PinsHeights: pinsHeights,
-		History: make([]Coord, radius*radius*radius),
-		Turns: 0,
+		History:     make([]Coord, radius*radius*radius),
+		Turns:       0,
 	}
 
 	return board
-}
-
-func main() {
-	b := NewBoard(4)
-	b.push(1, 1, WHITE)
-	b.push(2, 1, WHITE)
-	b.undo()
 }
 
 func (b Board) pretty() {
@@ -100,9 +96,12 @@ func (b Board) pretty() {
 
 func (c Color) color2byte() byte {
 	switch c {
-		case WHITE: return 'w'
-		case BLACK: return 'b'
-		case EMPTY: return '.'
+	case WHITE:
+		return 'w'
+	case BLACK:
+		return 'b'
+	case EMPTY:
+		return '.'
 	}
 	return '?'
 }
@@ -110,15 +109,19 @@ func (c Color) color2byte() byte {
 // String
 func (c Color) String() string {
 	switch c {
-		case WHITE: return "w"
-		case BLACK: return "b"
-		case EMPTY: return "."
+	case WHITE:
+		return "w"
+	case BLACK:
+		return "b"
+	case EMPTY:
+		return "."
 	}
 	return "?"
 }
 
 func (b Board) String() string {
-	str := make([]byte, 1000, b.Radius * b.Radius * b.Radius + 1000)
+	str := make([]byte, 1000, b.Radius*b.Radius*b.Radius+1000)
+
 	for z := b.Radius - 1; z >= 0; z-- {
 		str = append(str, '\n')
 
