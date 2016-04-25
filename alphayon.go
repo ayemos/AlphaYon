@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"strconv"
+    "fmt"
 )
 
 var sc = bufio.NewScanner(os.Stdin)
@@ -21,11 +22,18 @@ func (g *Game) play() {
 
 func (g *Game) playWithAI() Game {
 	sc.Split(bufio.ScanWords)
+    var err error
+    var x, y int
 	for {
-		x := nextInt()
-		y := nextInt()
+        fmt.Println("Please input x and y")
+		x = nextInt()
+		y = nextInt()
 
-		g.move(x, y)
+        err = g.move(x, y)
+
+        if err != nil {
+            fmt.Printf("%s\n", err)
+        }
 
 		g.pretty()
 	}
@@ -43,6 +51,7 @@ func nextInt() int {
 }
 
 func main() {
+    fmt.Println("Starting new Game")
 	game := NewGame(WHITE, 4)
     game.playWithAI()
 }
