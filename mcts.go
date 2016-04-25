@@ -5,10 +5,11 @@ import (
 	"math/rand"
 )
 
+/*
 func (node *Node) mcts(n int) (coord Coord) {
 	node.expandChildren()
-
 }
+*/
 
 func (node *Node) playout() (winner Color) {
 	for {
@@ -20,23 +21,25 @@ func (node *Node) playout() (winner Color) {
 		}
 
 
+        /*
 		for f := range node.Frees {
 
 		}
+        */
 	}
 }
 
 func (node *Node) expandChildren() {
-	for f := range node.Frees {
-		var newGame Game
-		copy(newGame, node.Game, Game)
+	for range node.Frees {
+        newGame := node.Game
+
 		newNode := &Node{
 			Game: newGame,
-			Children: make([]Node),
-			MCTSRecrod: &MCTSRecord{0, 0},
-			Played: false
+			Children: make([]Node, 1),
+			MCTSRecord: MCTSRecord{0, 0},
+			Played: false,
 		}
-		node.Children = append(node.Children,
+		node.Children = append(node.Children, *newNode)
 	}
 }
 

@@ -18,12 +18,16 @@ const (
 
 type Board struct {
 	Radius      int
+
 	Pins        [][][]Color
 	PinsHeights [][]int
+
 	History     []Coord
-	Turns       int
+
 	Frees       []Coord
 	FreesCount  int
+
+	Turns       int
 }
 
 func hoge() {

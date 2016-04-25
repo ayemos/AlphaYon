@@ -44,4 +44,5 @@ func nextInt() int {
 
 func main() {
 	game := NewGame(WHITE, 4)
+    game.playWithAI()
 }
