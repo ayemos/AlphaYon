@@ -5,7 +5,7 @@ type Game struct {
 	*Board
 }
 
-func (g *Game) move(x, y int) (err error){
+func (g *Game) move(x, y int) (err error) {
 	err = g.push(x, y, g.Turn)
 
 	if g.Turn == BLACK {
@@ -14,7 +14,7 @@ func (g *Game) move(x, y int) (err error){
 		g.Turn = BLACK
 	}
 
-    return err
+	return err
 }
 
 func NewGame(player Color, radius int) *Game {

@@ -4,9 +4,14 @@ type MCTSRecord struct {
 	Wins, Trials int
 }
 
+type Tree struct {
+    Root *Node
+}
+
 type Node struct {
 	Game
 	Children []Node
+	Parent   *Node
 	MCTSRecord
 	Played bool
 }
@@ -17,9 +22,9 @@ const MCTS_C = 0.3
 
 func (n Node) String() string {
 	/*
-	str := make([]byte)
-	n.Board
-	n.Children
+		str := make([]byte)
+		n.Board
+		n.Children
 	*/
 	return ""
 }
