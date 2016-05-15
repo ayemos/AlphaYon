@@ -71,17 +71,14 @@ func (b *Board) undo() (err error) {
 }
 
 func (b *Board) loadArray(arr []rune) (err error) {
-	fmt.Printf("arr:len => %d:%d\n", len(arr), b.Radius * b.Radius)
 	if len(arr) != b.Radius * b.Radius * b.Radius {
 		return fmt.Errorf("Loaded array must be radius*radius in length.\n")
 	}
 
 	for i, rn := range arr {
-		fmt.Println("hoge")
 		x := i % b.Radius
 		y := (i / b.Radius) % b.Radius
 		z := (i / (b.Radius * b.Radius)) % b.Radius
-		fmt.Printf("x:y:z => %d:%d:%d\n", x, y, z)
 
 		switch rn {
 		case 'b', 'B':

@@ -1,9 +1,5 @@
 package main
 
-import (
-	"fmt"
-)
-
 type Game struct {
 	Turn Color
 	*Board
@@ -62,19 +58,22 @@ func Judge(b *Board) (winner Color) {
 }
 
 func judgeFromPoint(b *Board, x, y, z int) (winner Color) {
-	fmt.Printf("X:Y:Z => %d:%d:%d\n", x, y, z)
-
 	var color Color
 	var count int
+	var tmpx, tmpy, tmpz int
 
 	for dx := 0; dx <= 1; dx++ {
 		for dy := 0; dy <= 1; dy++ {
 			for dz := 0; dz <= 1; dz++ {
+				tmpx = x
+				tmpy = y
+				tmpz = z
+
 				if dx == 0 && dy == 0 && dz == 0 {
 					continue
-				} else if (x + dx > 0) ||
-				(y + dy > 0) ||
-				(z + dx > 0) {
+				} else if (tmpx * dx > 0) ||
+				(tmpy * dy > 0) ||
+				(tmpz * dz > 0) {
 					// x != 0 && dx != 0
 					// (no way to find line)
 					continue
@@ -84,25 +83,25 @@ func judgeFromPoint(b *Board, x, y, z int) (winner Color) {
 				color = b.Pins[x][y][z]
 
 				if color == EMPTY {
-					return EMPTY
+					continue
 				}
 
-				x += dx
-				y += dy
-				z += dz
+				tmpx += dx
+				tmpy += dy
+				tmpz += dz
 				
 				count = 1
 
-				for ; x >= 0 && x < b.Radius &&
-				y >= 0 && y < b.Radius &&
-				z >= 0 && z < b.Radius; {
-					if color != b.Pins[x][y][z] {
+				for ; tmpx >= 0 && tmpx < b.Radius &&
+				tmpy >= 0 && tmpy < b.Radius &&
+				tmpz >= 0 && tmpz < b.Radius; {
+					if color != b.Pins[tmpx][tmpy][tmpz] {
 						break
 					}
 
-					x += dx
-					y += dy
-					z += dz
+					tmpx += dx
+					tmpy += dy
+					tmpz += dz
 
 					count += 1
 
