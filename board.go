@@ -30,10 +30,6 @@ type Board struct {
 	Turns       int
 }
 
-func hoge() {
-	fmt.Println("hoge!")
-}
-
 func (b *Board) push(x, y int, c Color) (err error) {
 	if b.PinsHeights[x][y] == b.Radius {
 		return fmt.Errorf("Invalid Move:(%d, %d)\n", x, y)
@@ -119,6 +115,31 @@ func NewBoard(radius int) *Board {
 	}
 
 	return board
+}
+
+func (src *Board) CopyBoard (dst *Board) {
+	r := src.Radius
+	pins := make([][][]Color, r)
+	copy(pins, src.Pins)
+
+	pinsHeights := make([][]int, r)
+	copy(pinsHeights, src.PinsHeights)
+
+	history := make([]Coord, r*r*r)
+	copy(history, src.History)
+
+	frees := make([]Coord, r*r)
+	copy(frees, src.Frees)
+
+	dst = &Board {
+		Radius:      r,
+		Pins:        pins,
+		PinsHeights: pinsHeights,
+		History:     history,
+		Turns:       src.Turns,
+		Frees:       frees,
+		FreesCount:  src.FreesCount,
+	}
 }
 
 func (b Board) pretty() {

@@ -25,3 +25,11 @@ func NewGame(player Color, radius int) *Game {
 
 	return game
 }
+
+func (turn Color) nextTurn (next Color) {
+	if turn == WHITE {
+		next = BLACK
+	} else if turn == BLACK {
+		next = WHITE
+	}
+}

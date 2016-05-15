@@ -16,10 +16,5 @@ const MCTS_C = 0.3
 // String
 
 func (n Node) String() string {
-	/*
-	str := make([]byte)
-	n.Board
-	n.Children
-	*/
 	return ""
 }

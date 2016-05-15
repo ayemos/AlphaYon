@@ -2,14 +2,29 @@ package main
 
 import (
 	"math"
-	"math/rand"
 )
 
-/*
+// TODO: time limited mcts
 func (node *Node) mcts(n int) (coord Coord) {
 	node.expandChildren()
+
+	for {
+		// Playout every initial nodes first
+		for _, initialNode := range node.initialNodes() {
+			initialNode.playout()
+		}
+
+		var maxNode Node
+		// Choose the node has maximum mcts factor
+
+
+		// playout
+		maxNode.playout()
+
+		// expand maxNode if threshold
+
+	}
 }
-*/
 
 func (node *Node) playout() (winner Color) {
 	for {
@@ -31,6 +46,7 @@ func (node *Node) playout() (winner Color) {
 
 func (node *Node) expandChildren() {
 	for range node.Frees {
+		newBoard := node.Game.Board
         newGame := node.Game
 
 		newNode := &Node{
@@ -39,13 +55,30 @@ func (node *Node) expandChildren() {
 			MCTSRecord: MCTSRecord{0, 0},
 			Played: false,
 		}
+
 		node.Children = append(node.Children, *newNode)
 	}
 }
 
+func (node *Node) initialNodes() (nodes []Node) {
+	// TODO: 10
+	nodes = make([]Node, 10)
+	if !node.Played {
+		nodes = append(nodes, *node)
+	}
+
+	for _, child := range node.Children {
+		for _, initialChild := range child.initialNodes() {
+			nodes = append(nodes, initialChild)
+		}
+	}
+}
+
+/*
 func (node *Node) tryRandomMove() {
 	node.move(rand.Intn(node.Radius), rand.Intn(node.Radius))
 }
+*/
 
 func (b *Board) judge() (winner Color) {
 	return EMPTY
