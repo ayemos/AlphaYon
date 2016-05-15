@@ -22,7 +22,6 @@ func (node *Node) mcts(n int) (coord Coord) {
 		maxNode.playout()
 
 		// expand maxNode if threshold
-
 	}
 }
 
@@ -35,13 +34,14 @@ func (node *Node) playout() (winner Color) {
 			return winner
 		}
 
-
-        /*
 		for f := range node.Frees {
 
 		}
-        */
 	}
+}
+
+func (node *Node) playoutInitialNode() (winner Color) {
+
 }
 
 func (node *Node) expandChildren() {
@@ -50,10 +50,10 @@ func (node *Node) expandChildren() {
         newGame := node.Game
 
 		newNode := &Node{
-			Game: newGame,
-			Children: make([]Node, 1),
+			Game:       newGame,
+			Children:   make([]Node, 1),
 			MCTSRecord: MCTSRecord{0, 0},
-			Played: false,
+			Played:     false,
 		}
 
 		node.Children = append(node.Children, *newNode)
@@ -84,8 +84,8 @@ func (b *Board) judge() (winner Color) {
 	return EMPTY
 }
 
-func mctsFactor(node *Node) float64 {
-	// TODO: fix
+func mctsFactor(node *Node, n int) float64 {
+	// TODO: make it fast
 	return float64(node.Wins/node.Trials) +
-		MCTS_C*math.Sqrt(math.Log(10)/float64(node.Trials))
+		MCTS_C*math.Sqrt(math.Log(float64(n))/float64(node.Trials))
 }

@@ -17,17 +17,17 @@ const (
 )
 
 type Board struct {
-	Radius      int
+	Radius int
 
 	Pins        [][][]Color
 	PinsHeights [][]int
 
-	History     []Coord
+	History []Coord
 
-	Frees       []Coord
-	FreesCount  int
+	Frees      []Coord
+	FreesCount int
 
-	Turns       int
+	Turns int
 }
 
 func (b *Board) push(x, y int, c Color) (err error) {
@@ -174,7 +174,7 @@ func (c Color) String() string {
 }
 
 func (b Board) String() string {
-	str := make([]byte, 0, 2*b.Radius*b.Radius*b.Radius + b.Radius + b.Radius*b.Radius)
+	str := make([]byte, 0, 2*b.Radius*b.Radius*b.Radius+b.Radius+b.Radius*b.Radius)
 
 	for z := b.Radius - 1; z >= 0; z-- {
 		str = append(str, '\n')

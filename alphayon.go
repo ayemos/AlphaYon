@@ -2,9 +2,10 @@ package main
 
 import (
 	"bufio"
+	"flag"
+	"fmt"
 	"os"
 	"strconv"
-    "fmt"
 )
 
 var sc = bufio.NewScanner(os.Stdin)
@@ -20,20 +21,20 @@ func (g *Game) play() {
 	}
 }
 
-func (g *Game) playWithAI() Game {
+func (g *Game) playWithAI(numMcts int) Game {
 	sc.Split(bufio.ScanWords)
-    var err error
-    var x, y int
+	var err error
+	var x, y int
 	for {
-        fmt.Println("Please input x and y")
+		fmt.Println("Please input x and y")
 		x = nextInt()
 		y = nextInt()
 
-        err = g.move(x, y)
+		err = g.move(x, y)
 
-        if err != nil {
-            fmt.Printf("%s\n", err)
-        }
+		if err != nil {
+			fmt.Printf("%s\n", err)
+		}
 
 		g.pretty()
 	}
@@ -51,7 +52,16 @@ func nextInt() int {
 }
 
 func main() {
-    fmt.Println("Starting new Game")
+	var ai = flag.Bool("with-ai", true, "fight with ai.")
+	var numMcts = flag.Int("num-mcts", 3000, "number of trial in mcts.")
+	flag.Parse()
+
+	fmt.Println("Starting new Game")
 	game := NewGame(WHITE, 4)
-    game.playWithAI()
+
+	if *ai {
+		game.playWithAI(*numMcts)
+	} else {
+		game.play()
+	}
 }
