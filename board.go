@@ -70,6 +70,34 @@ func (b *Board) undo() (err error) {
 	return nil
 }
 
+func (b *Board) loadArray(arr []rune) (err error) {
+	fmt.Printf("arr:len => %d:%d\n", len(arr), b.Radius * b.Radius)
+	if len(arr) != b.Radius * b.Radius * b.Radius {
+		return fmt.Errorf("Loaded array must be radius*radius in length.\n")
+	}
+
+	for i, rn := range arr {
+		fmt.Println("hoge")
+		x := i % b.Radius
+		y := (i / b.Radius) % b.Radius
+		z := (i / (b.Radius * b.Radius)) % b.Radius
+		fmt.Printf("x:y:z => %d:%d:%d\n", x, y, z)
+
+		switch rn {
+		case 'b', 'B':
+			b.Pins[x][y][z] = BLACK
+		case 'w', 'W':
+			b.Pins[x][y][z] = WHITE
+		case '.', 'e', 'E':
+			b.Pins[x][y][z] = EMPTY
+		default:
+			return fmt.Errorf("Invalid Color: %s.\n", rn)
+		}
+	}
+
+	return nil
+}
+
 // コンストラクタ関数を定義
 func NewBoard(radius int) *Board {
 	pins := make([][][]Color, radius)
@@ -146,19 +174,6 @@ func (c Color) color2byte() byte {
 		return '.'
 	}
 	return '?'
-}
-
-// String
-func (c Color) String() string {
-	switch c {
-	case WHITE:
-		return "w"
-	case BLACK:
-		return "b"
-	case EMPTY:
-		return "."
-	}
-	return "?"
 }
 
 func (b Board) String() string {
