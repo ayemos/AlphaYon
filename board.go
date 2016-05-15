@@ -24,6 +24,13 @@ type Board struct {
 
 	History []Coord
 
+	/*
+	 * TODO: Free positions are begin managed by game.moveFree
+	 * and it's not the best way.
+	 * Note that free positions would only be used by AI and its MCTS.
+	 * (using more naive way is enough for displaying free posiions or
+	 * other use cases.)
+	 */
 	Frees      []Coord
 	FreesCount int
 
@@ -39,25 +46,6 @@ func (b *Board) push(x, y int, c Color) (err error) {
 	b.PinsHeights[x][y]++
 	b.History[b.Turns] = Coord{x, y}
 	b.Turns++
-
-	return nil
-}
-
-// push one stone to f-th free space
-func (b *Board) pushFree(f int, c Color) (err error) {
-	x := b.Frees[f].X
-	y := b.Frees[f].Y
-
-	err = b.push(x, y, c)
-	if err != nil {
-		return err
-	}
-
-	// position (x, y) was filled
-	if b.PinsHeights[x][y] == b.Radius {
-		b.FreesCount--
-		b.Frees[f] = b.Frees[b.FreesCount]
-	}
 
 	return nil
 }

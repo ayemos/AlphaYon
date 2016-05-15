@@ -10,33 +10,60 @@ import (
 
 var sc = bufio.NewScanner(os.Stdin)
 
-func (g *Game) play() {
+func play(game *Game) {
 	sc.Split(bufio.ScanWords)
+	var err error
+
 	for {
 		x := nextInt()
 		y := nextInt()
 
-		g.move(x, y)
-		g.pretty()
-	}
-}
-
-func (g *Game) playWithAI(numMcts int) Game {
-	sc.Split(bufio.ScanWords)
-	var err error
-	var x, y int
-	for {
-		fmt.Println("Please input x and y")
-		x = nextInt()
-		y = nextInt()
-
-		err = g.move(x, y)
+		err = game.move(x, y)
 
 		if err != nil {
 			fmt.Printf("%s\n", err)
 		}
 
-		g.pretty()
+		game.pretty()
+	}
+}
+
+func playWithAI(game *Game, numMcts int) Game {
+	ai := NewAI(game, 0.3) // MCTS_C
+	sc.Split(bufio.ScanWords)
+	var err error
+
+	for {
+		for {
+			fmt.Println("Please input x and y")
+			x := nextInt()
+			y := nextInt()
+
+			err = game.move(x, y)
+
+			if err != nil {
+				fmt.Printf("%s\n", err)
+			} else {
+				break
+			}
+		}
+
+		game.pretty()
+		fmt.Printf("Free positions:\n");
+		fmt.Printf("%s\n", game.Frees);
+		fmt.Printf("%s\n", game.PinsHeights);
+
+		fmt.Println("AI is thinking...");
+
+		aiX, aiY := ai.solve()
+		// AI turn
+		err = game.move(aiX, aiY)
+
+		if err != nil {
+			fmt.Printf("%s\n", err);
+		}
+
+		game.pretty()
 	}
 }
 
@@ -52,16 +79,16 @@ func nextInt() int {
 }
 
 func main() {
-	var ai = flag.Bool("with-ai", true, "fight with ai.")
+	var withAI = flag.Bool("with-ai", true, "fight with ai.")
 	var numMcts = flag.Int("num-mcts", 3000, "number of trial in mcts.")
 	flag.Parse()
 
 	fmt.Println("Starting new Game")
 	game := NewGame(WHITE, 4)
 
-	if *ai {
-		game.playWithAI(*numMcts)
+	if *withAI {
+		playWithAI(game, *numMcts)
 	} else {
-		game.play()
+		play(game)
 	}
 }

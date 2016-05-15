@@ -16,8 +16,6 @@ type Node struct {
 	Played bool
 }
 
-const MCTS_C = 0.3
-
 // String
 
 func (n Node) String() string {
