@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"math/rand"
 )
 
 type AI struct {
@@ -12,59 +13,95 @@ type AI struct {
 	CurrentNode *Node
 }
 
-func (ai *AI) solve(timeLimit int) (int, int) {
+func (ai *AI) solve(player Color, timeLimit int) (int, int) {
 	// TODO: handle timeLimit
 
-	// use mcts to calculate next move
-	coord := ai.CurrentNode.mcts()
+	// create root node according to game state
+	// search from the root node
+	root := NewNode(ai.Game)
+	root.expandChildren()
 
-	return coord.X, coord.Y
+	// use mcts to calculate next move
+	mcts(root, player, ai.MctsC)
+
+	// choose child who has max score
+	// for child := root.Children { ...
+
+	return 0, 0
 }
 
 // TODO: time limited mcts
-func (node *Node) mcts() (coord Coord) {
+func mcts(root *Node, player Color, mctsC float64) {
 	fmt.Println("mcts")
-	fmt.Println(node)
-	node.expandChildren()
-	fmt.Println(node)
+	fmt.Println(root)
+
+	var maxNode, node *Node
+	node = root
 
 	for {
-		// Playout every initial nodes first
-		for _, initialNode := range node.initialNodes() {
-			initialNode.playout()
-		}
+		maxNode = chooseMaxNode(node, mctsC)
 
-		var maxNode Node
+		fmt.Println(node)
 		// Choose the node has maximum mcts factor
 
 		// playout
-		maxNode.playout()
+		winner = maxNode.playout()
+		win = winner == root.Game.Turn
 
-		// expand maxNode if threshold
+		// backpropagate
+		for {
+			maxNode
+		}
+	}
+}
+
+func chooseMaxNode(root *Node, mctsC float64) *Node {
+	if len(root.Children) == 0 {
+		return root
 	}
 
-	return Coord{0, 0}
+	maxNode := root
+	maxScore := 0.0
+
+	for _, child := range root.Children {
+		// Playout every initial nodes first
+		if !child.Played {
+			return child
+		}
+
+		score := mctsFactor(child, root.Trials, mctsC)
+
+		if score > maxScore {
+			maxNode = child
+			maxScore = score
+		}
+	}
+
+	return maxNode
+}
+
+func shouldExpand(node *Node) bool {
+	return false
 }
 
 func (node *Node) playout() (winner Color) {
+	board := CopyBoard(node.Game.Board)
+
+	fmt.Println("playout on")
+	fmt.Println(board)
+
 	for {
 		winner = Judge(node.Game.Board)
 
-		// TODO: winner is evaluated twice
-		if winner == WHITE || winner == BLACK {
+		if winner != EMPTY {
+			fmt.Printf("%s won!\n", winner)
+
 			return winner
 		}
 
-		/*
-			for _, f := range node.Frees {
-
-			}
-		*/
+		tryRandomMove(node)
+		fmt.Println(board)
 	}
-}
-
-func (node *Node) playoutInitialNode() (winner Color) {
-	return BLACK
 }
 
 func (node *Node) expandChildren() {
@@ -76,8 +113,6 @@ func (node *Node) expandChildren() {
 			Turn:   node.Game.Turn,
 			Board:  newBoard,
 		}
-		fmt.Println("diff pt")
-		fmt.Println(&node.Game.Board)
 
 		newGame.moveFree(i)
 
@@ -87,12 +122,11 @@ func (node *Node) expandChildren() {
 	}
 }
 
-func (node *Node) initialNodes() (nodes []Node) {
-	// TODO: 10
-	nodes = make([]Node, 10)
+func (node *Node) initialNodes() (nodes []*Node) {
+	nodes = make([]*Node, 0)
 
 	if !node.Played {
-		nodes = append(nodes, *node)
+		nodes = append(nodes, node)
 	}
 
 	for _, child := range node.Children {
@@ -101,17 +135,22 @@ func (node *Node) initialNodes() (nodes []Node) {
 		}
 	}
 
-	return nil
+	return nodes
 }
 
-func (node *Node) tryRandomMove() {
-	// node.move(rand.Intn(node.Radius), rand.Intn(node.Radius))
+func tryRandomMove(node *Node) {
+	game := node.Game
+	game.moveFree(rand.Intn(node.Game.Board.FreesCount))
 }
 
-func (ai *AI) mctsFactor(node *Node, n int) float64 {
+func mctsFactor(node *Node, n int, mctsC float64) float64 {
+	if node.Trials == 0 {
+		return 0.0
+	}
+
 	// TODO: make it fast
 	return float64(node.Wins/node.Trials) +
-		float64(ai.MctsC)*math.Sqrt(math.Log(float64(n))/float64(node.Trials))
+		mctsC*math.Sqrt(math.Log(float64(n))/float64(node.Trials))
 }
 
 func NewAI(game *Game, mctsC float64) *AI {

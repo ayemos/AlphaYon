@@ -132,12 +132,22 @@ func NewBoard(radius int) *Board {
 
 func CopyBoard(src *Board) *Board {
 	r := src.Radius
-	// TODO: やはり[]Colorにリファクタリング？
 	pins := make([][][]Color, r)
-	copy(pins, src.Pins)
+
+	for x, _ := range pins {
+		pins[x] = make([][]Color, r)
+
+		for y, _ := range pins[x] {
+			pins[x][y] = make([]Color, r)
+			copy(pins[x][y], src.Pins[x][y])
+		}
+	}
 
 	pinsHeights := make([][]int, r)
-	copy(pinsHeights, src.PinsHeights)
+	for x, _ := range pins {
+		pinsHeights[x] = make([]int, r)
+		copy(pinsHeights[x], src.PinsHeights[x])
+	}
 
 	history := make([]Coord, r*r*r)
 	copy(history, src.History)

@@ -17,6 +17,7 @@ type Node struct {
 	Children []*Node
 	Parent   *Node
 	MCTSRecord
+	Coord
 	Played bool
 }
 
@@ -26,6 +27,7 @@ func NewNode(game *Game) *Node {
 		Children:   []*Node{},
 		Parent:     nil,
 		MCTSRecord: MCTSRecord{0, 0},
+		Coord:      Coord{-1, -1},
 		Played:     false,
 	}
 
@@ -43,7 +45,7 @@ func NewTree(game *Game) *Tree {
 }
 
 func repNode(n Node, depth int) string {
-	str := make([]byte, 1)
+	str := make([]byte, 0)
 	str = append(str, "Node(\n"...)
 
 	var yn string
@@ -73,7 +75,7 @@ func repNode(n Node, depth int) string {
 }
 
 func buildString(n Node, depth int) string {
-	str := make([]byte, 1)
+	str := make([]byte, 0)
 
 	for i := 0; i < depth; i++ {
 		str = append(str, '\t')
@@ -89,7 +91,7 @@ func buildString(n Node, depth int) string {
 }
 
 func (n Node) String() string {
-	str := make([]byte, 1)
+	str := make([]byte, 0)
 	str = append(str, buildString(n, 0)...)
 	return string(str)
 }
