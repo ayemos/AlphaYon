@@ -28,8 +28,6 @@ func (node *Node) mcts() (coord Coord) {
 	node.expandChildren()
 	fmt.Println(node)
 
-	fmt.Println(node)
-
 	for {
 		// Playout every initial nodes first
 		for _, initialNode := range node.initialNodes() {
@@ -70,19 +68,18 @@ func (node *Node) playoutInitialNode() (winner Color) {
 }
 
 func (node *Node) expandChildren() {
-	for range node.Game.Board.Frees {
-		/*
-			newBoard := node.Game.Board
-		*/
-
-		newBoard := NewBoard(node.Game.Board.Radius)
-		CopyBoard(node.Game.Board, newBoard)
+	for i := range node.Game.Board.Frees {
+		newBoard := CopyBoard(node.Game.Board)
 
 		newGame := &Game{
 			Winner: node.Game.Winner,
-			Turn:   node.Game.Turn.nextTurn(),
+			Turn:   node.Game.Turn,
 			Board:  newBoard,
 		}
+		fmt.Println("diff pt")
+		fmt.Println(&node.Game.Board)
+
+		newGame.moveFree(i)
 
 		newNode := NewNode(newGame)
 

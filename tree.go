@@ -54,10 +54,19 @@ func repNode(n Node, depth int) string {
 		yn = "No"
 	}
 
+	for i := 0; i < depth; i++ {
+		str = append(str, fmt.Sprintf("\t")...)
+	}
+
 	str = append(str, fmt.Sprintf("\tPlayed: %s\n", yn)...)
+
+	for i := 0; i < depth; i++ {
+		str = append(str, fmt.Sprintf("\t")...)
+	}
+
 	str = append(str, fmt.Sprintf("\tWins: %d, Trials: %d, Loses: %d\n",
 		n.Wins, n.Trials, n.Trials-n.Wins)...)
-	str = append(str, fmt.Sprintf(hDump(*n.Game.Board, depth))...)
+	str = append(str, fmt.Sprintf(hDump(*n.Game.Board, depth+1))...)
 
 	str = append(str, ")\n"...)
 	return string(str)

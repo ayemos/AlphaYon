@@ -130,8 +130,9 @@ func NewBoard(radius int) *Board {
 	return board
 }
 
-func CopyBoard(src *Board, dst *Board) {
+func CopyBoard(src *Board) *Board {
 	r := src.Radius
+	// TODO: やはり[]Colorにリファクタリング？
 	pins := make([][][]Color, r)
 	copy(pins, src.Pins)
 
@@ -144,7 +145,7 @@ func CopyBoard(src *Board, dst *Board) {
 	frees := make([]Coord, r*r)
 	copy(frees, src.Frees)
 
-	dst = &Board{
+	return &Board{
 		Radius:      r,
 		Pins:        pins,
 		PinsHeights: pinsHeights,
@@ -181,7 +182,7 @@ func hDump(b Board, depth int) string {
 	str := make([]byte, 0, 2*b.Radius*b.Radius*b.Radius+b.Radius+b.Radius*b.Radius)
 
 	for y := b.Radius - 1; y >= 0; y-- {
-		if y != 0 {
+		if y != b.Radius-1 {
 			str = append(str, '\n')
 		}
 
