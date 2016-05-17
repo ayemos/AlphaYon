@@ -1,7 +1,8 @@
 package main
 
 type Game struct {
-	Turn Color
+	Winner Color
+	Turn   Color
 	*Board
 }
 
@@ -71,9 +72,9 @@ func judgeFromPoint(b *Board, x, y, z int) (winner Color) {
 
 				if dx == 0 && dy == 0 && dz == 0 {
 					continue
-				} else if (tmpx * dx > 0) ||
-				(tmpy * dy > 0) ||
-				(tmpz * dz > 0) {
+				} else if (tmpx*dx > 0) ||
+					(tmpy*dy > 0) ||
+					(tmpz*dz > 0) {
 					// x != 0 && dx != 0
 					// (no way to find line)
 					continue
@@ -89,12 +90,12 @@ func judgeFromPoint(b *Board, x, y, z int) (winner Color) {
 				tmpx += dx
 				tmpy += dy
 				tmpz += dz
-				
+
 				count = 1
 
-				for ; tmpx >= 0 && tmpx < b.Radius &&
-				tmpy >= 0 && tmpy < b.Radius &&
-				tmpz >= 0 && tmpz < b.Radius; {
+				for tmpx >= 0 && tmpx < b.Radius &&
+					tmpy >= 0 && tmpy < b.Radius &&
+					tmpz >= 0 && tmpz < b.Radius {
 					if color != b.Pins[tmpx][tmpy][tmpz] {
 						break
 					}
@@ -119,17 +120,19 @@ func judgeFromPoint(b *Board, x, y, z int) (winner Color) {
 
 func NewGame(player Color, radius int) *Game {
 	game := &Game{
-		Turn:  player,
-		Board: NewBoard(radius),
+		Winner: EMPTY,
+		Turn:   player,
+		Board:  NewBoard(radius),
 	}
 
 	return game
 }
 
-func (turn Color) nextTurn (next Color) {
+func (turn Color) nextTurn() Color {
 	if turn == WHITE {
-		next = BLACK
+		return BLACK
 	} else if turn == BLACK {
-		next = WHITE
+		return WHITE
 	}
+	return EMPTY
 }

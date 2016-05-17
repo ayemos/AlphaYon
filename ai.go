@@ -1,24 +1,34 @@
 package main
 
 import (
+	"fmt"
 	"math"
-	"math/rand"
 )
 
 type AI struct {
-	Game *Game
-	MctsC float64
+	Game        *Game
+	MctsC       float64
+	Tree        *Tree
+	CurrentNode *Node
 }
 
-func (ai *AI) solve() (int, int) {
+func (ai *AI) solve(timeLimit int) (int, int) {
+	// TODO: handle timeLimit
+
 	// use mcts to calculate next move
-	
-	return rand.Intn(ai.Game.Radius), rand.Intn(ai.Game.Radius)
+	coord := ai.CurrentNode.mcts()
+
+	return coord.X, coord.Y
 }
 
 // TODO: time limited mcts
-func (node *Node) mcts(n int) (coord Coord) {
+func (node *Node) mcts() (coord Coord) {
+	fmt.Println("mcts")
+	fmt.Println(node)
 	node.expandChildren()
+	fmt.Println(node)
+
+	fmt.Println(node)
 
 	for {
 		// Playout every initial nodes first
@@ -28,7 +38,6 @@ func (node *Node) mcts(n int) (coord Coord) {
 
 		var maxNode Node
 		// Choose the node has maximum mcts factor
-
 
 		// playout
 		maxNode.playout()
@@ -41,7 +50,7 @@ func (node *Node) mcts(n int) (coord Coord) {
 
 func (node *Node) playout() (winner Color) {
 	for {
-		winner = Judge(node.Board)
+		winner = Judge(node.Game.Board)
 
 		// TODO: winner is evaluated twice
 		if winner == WHITE || winner == BLACK {
@@ -49,38 +58,42 @@ func (node *Node) playout() (winner Color) {
 		}
 
 		/*
-		for _, f := range node.Frees {
+			for _, f := range node.Frees {
 
-		}
+			}
 		*/
 	}
 }
 
 func (node *Node) playoutInitialNode() (winner Color) {
-	return BLACK;
+	return BLACK
 }
 
 func (node *Node) expandChildren() {
-	for range node.Frees {
+	for range node.Game.Board.Frees {
 		/*
-		newBoard := node.Game.Board
+			newBoard := node.Game.Board
 		*/
-        newGame := node.Game
 
-		newNode := &Node{
-			Game:       newGame,
-			Children:   make([]Node, 1),
-			MCTSRecord: MCTSRecord{0, 0},
-			Played:     false,
+		newBoard := NewBoard(node.Game.Board.Radius)
+		CopyBoard(node.Game.Board, newBoard)
+
+		newGame := &Game{
+			Winner: node.Game.Winner,
+			Turn:   node.Game.Turn.nextTurn(),
+			Board:  newBoard,
 		}
 
-		node.Children = append(node.Children, *newNode)
+		newNode := NewNode(newGame)
+
+		node.Children = append(node.Children, newNode)
 	}
 }
 
 func (node *Node) initialNodes() (nodes []Node) {
 	// TODO: 10
 	nodes = make([]Node, 10)
+
 	if !node.Played {
 		nodes = append(nodes, *node)
 	}
@@ -91,7 +104,7 @@ func (node *Node) initialNodes() (nodes []Node) {
 		}
 	}
 
-	return nil;
+	return nil
 }
 
 func (node *Node) tryRandomMove() {
@@ -101,13 +114,17 @@ func (node *Node) tryRandomMove() {
 func (ai *AI) mctsFactor(node *Node, n int) float64 {
 	// TODO: make it fast
 	return float64(node.Wins/node.Trials) +
-		float64(ai.MctsC) * math.Sqrt(math.Log(float64(n))/float64(node.Trials))
+		float64(ai.MctsC)*math.Sqrt(math.Log(float64(n))/float64(node.Trials))
 }
 
 func NewAI(game *Game, mctsC float64) *AI {
+	tree := NewTree(game)
+
 	ai := &AI{
-		Game: game,
-		MctsC: mctsC,
+		Game:        game,
+		MctsC:       mctsC,
+		Tree:        tree,
+		CurrentNode: tree.Root,
 	}
 
 	return ai

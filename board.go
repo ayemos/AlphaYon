@@ -71,7 +71,7 @@ func (b *Board) undo() (err error) {
 }
 
 func (b *Board) loadArray(arr []rune) (err error) {
-	if len(arr) != b.Radius * b.Radius * b.Radius {
+	if len(arr) != b.Radius*b.Radius*b.Radius {
 		return fmt.Errorf("Loaded array must be radius*radius in length.\n")
 	}
 
@@ -130,7 +130,7 @@ func NewBoard(radius int) *Board {
 	return board
 }
 
-func (src *Board) CopyBoard (dst *Board) {
+func CopyBoard(src *Board, dst *Board) {
 	r := src.Radius
 	pins := make([][][]Color, r)
 	copy(pins, src.Pins)
@@ -144,7 +144,7 @@ func (src *Board) CopyBoard (dst *Board) {
 	frees := make([]Coord, r*r)
 	copy(frees, src.Frees)
 
-	dst = &Board {
+	dst = &Board{
 		Radius:      r,
 		Pins:        pins,
 		PinsHeights: pinsHeights,
@@ -157,7 +157,7 @@ func (src *Board) CopyBoard (dst *Board) {
 
 func (b Board) pretty() {
 	fmt.Printf("+++++Pretty Board+++++\n")
-	fmt.Printf("%s\n", b)
+	fmt.Println(hDump(b, 0))
 	fmt.Printf("++++++++++++++++++++++\n")
 }
 
@@ -171,6 +171,40 @@ func (c Color) color2byte() byte {
 		return '.'
 	}
 	return '?'
+}
+
+func vDump() {
+
+}
+
+func hDump(b Board, depth int) string {
+	str := make([]byte, 0, 2*b.Radius*b.Radius*b.Radius+b.Radius+b.Radius*b.Radius)
+
+	for y := b.Radius - 1; y >= 0; y-- {
+		if y != 0 {
+			str = append(str, '\n')
+		}
+
+		for i := 0; i < depth; i++ {
+			str = append(str, '\t')
+		}
+
+		for z := 0; z < b.Radius; z++ {
+			if z != 0 {
+				str = append(str, '\t')
+			}
+
+			for x := 0; x < b.Radius; x++ {
+				str = append(str, b.Pins[x][y][z].color2byte())
+
+				if x != b.Radius {
+					str = append(str, ' ')
+				}
+			}
+		}
+	}
+
+	return string(str)
 }
 
 func (b Board) String() string {
