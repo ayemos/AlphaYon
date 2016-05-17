@@ -28,11 +28,12 @@ func play(game *Game) {
 	}
 }
 
-func playWithAI(game *Game, numMcts int, timeLimit int) Game {
+func playWithAI(game *Game, numMcts int, timeLimit int) {
 	ai := NewAI(game, 0.3) // MCTS_C
 	sc.Split(bufio.ScanWords)
 
 	var err error
+	var winner Color
 
 	for {
 		for {
@@ -49,11 +50,18 @@ func playWithAI(game *Game, numMcts int, timeLimit int) Game {
 			}
 		}
 
+		winner = Judge(game.Board)
+
 		game.pretty()
+
+		if winner != EMPTY {
+			fmt.Printf("%s Won!\n")
+			return
+		}
 
 		fmt.Println("AI is thinking...")
 
-		aiX, aiY := ai.solve(timeLimit)
+		aiX, aiY := ai.solve(game.Turn, timeLimit)
 
 		// AI turn
 		err = game.move(aiX, aiY)
@@ -63,6 +71,11 @@ func playWithAI(game *Game, numMcts int, timeLimit int) Game {
 		}
 
 		game.pretty()
+
+		if winner != EMPTY {
+			fmt.Printf("%s Won!\n")
+			return
+		}
 	}
 }
 

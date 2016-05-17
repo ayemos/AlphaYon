@@ -5,7 +5,7 @@ import (
 )
 
 type MCTSRecord struct {
-	Wins, Trials int
+	Wins, Draws, Trials int
 }
 
 type Tree struct {
@@ -26,12 +26,26 @@ func NewNode(game *Game) *Node {
 		Game:       game,
 		Children:   []*Node{},
 		Parent:     nil,
-		MCTSRecord: MCTSRecord{0, 0},
+		MCTSRecord: MCTSRecord{0, 0, 0},
 		Coord:      Coord{-1, -1},
 		Played:     false,
 	}
 
 	return node
+}
+
+func (node *Node) root() *Node {
+	if node.Parent == nil {
+		return node
+	} else {
+		return node.Parent.root()
+	}
+}
+
+func (node *Node) appendChild(child *Node) error {
+	child.Parent = node
+	node.Children = append(node.Children, child)
+	return nil
 }
 
 func NewTree(game *Game) *Tree {
@@ -66,8 +80,9 @@ func repNode(n Node, depth int) string {
 		str = append(str, fmt.Sprintf("\t")...)
 	}
 
-	str = append(str, fmt.Sprintf("\tWins: %d, Trials: %d, Loses: %d\n",
-		n.Wins, n.Trials, n.Trials-n.Wins)...)
+	str = append(str, fmt.Sprintf("\tWins: %d, Draws: %d, Loses: %d, Trials: %d\n",
+		n.Wins, n.Draws, n.Trials-n.Wins, n.Trials)...)
+	str = append(str, fmt.Sprintf("\tMCTS: %.2f\n", n.mctsFactor(n.root().Trials, 0.3))...)
 	str = append(str, fmt.Sprintf(hDump(*n.Game.Board, depth+1))...)
 
 	str = append(str, ")\n"...)

@@ -45,6 +45,17 @@ func Judge(b *Board) (winner Color) {
 		}
 	}
 
+	winner = EMPTY
+	for x := 1; x < b.Radius; x++ {
+		for z := 1; z < b.Radius; z++ {
+			winner = judgeFromPoint(b, x, 0, z)
+
+			if winner != EMPTY {
+				return winner
+			}
+		}
+	}
+
 	for y := 0; y < b.Radius; y++ {
 		for z := 1; z < b.Radius; z++ {
 			winner = judgeFromPoint(b, 0, y, z)
@@ -116,6 +127,14 @@ func judgeFromPoint(b *Board, x, y, z int) (winner Color) {
 	}
 
 	return EMPTY
+}
+
+func CopyGame(src *Game) *Game {
+	return &Game{
+		Winner: src.Winner,
+		Turn:   src.Turn,
+		Board:  CopyBoard(src.Board),
+	}
 }
 
 func NewGame(player Color, radius int) *Game {

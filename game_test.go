@@ -4,14 +4,12 @@ import (
 	"testing"
 )
 
-
 type boardTest struct {
-	pins []rune
+	pins   []rune
 	winner Color
 }
 
 var boardsToTest = []boardTest{
-	/*
 	boardTest{
 		[]rune{
 			'.', '.', '.', '.',
@@ -55,7 +53,6 @@ var boardsToTest = []boardTest{
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
 			'.', '.', '.', '.'}, EMPTY},
-			*/
 
 	boardTest{
 		[]rune{
@@ -196,10 +193,10 @@ var boardsToTest = []boardTest{
 			'w', 'b', 'w', 'b',
 			'w', 'w', 'b', 'w',
 
-			'b', 'b', 'b', 'b',
-			'.', '.', '.', '.',
-			'.', '.', '.', '.',
-			'.', '.', '.', '.',
+			'b', 'w', 'b', 'b',
+			'.', 'w', '.', '.',
+			'.', 'w', '.', '.',
+			'.', 'w', '.', '.',
 
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
@@ -209,7 +206,7 @@ var boardsToTest = []boardTest{
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
-			'.', '.', '.', '.'}, BLACK},
+			'.', '.', '.', '.'}, WHITE},
 }
 
 func TestJudge(t *testing.T) {
