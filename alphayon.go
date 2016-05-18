@@ -50,12 +50,12 @@ func playWithAI(game *Game, numMcts int, timeLimit int) {
 			}
 		}
 
-		winner = Judge(game.Board)
-
 		game.pretty()
 
+		winner = Judge(game.Board)
+
 		if winner != EMPTY {
-			fmt.Printf("%s Won!\n")
+			fmt.Printf("%s Won!\n", winner)
 			return
 		}
 
@@ -72,8 +72,10 @@ func playWithAI(game *Game, numMcts int, timeLimit int) {
 
 		game.pretty()
 
+		winner = Judge(game.Board)
+
 		if winner != EMPTY {
-			fmt.Printf("%s Won!\n")
+			fmt.Printf("%s Won!\n", winner)
 			return
 		}
 	}

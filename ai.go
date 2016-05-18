@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//	"fmt"
 	"math"
 	"math/rand"
 )
@@ -22,7 +22,7 @@ func (ai *AI) solve(player Color, timeLimit int) (int, int) {
 	root.expandChildren()
 
 	// use mcts to calculate next move
-	mcts(root, player, ai.MctsC)
+	mcts(root, player, ai.MctsC, 100)
 
 	// choose child who has max score
 	var maxChild *Node
@@ -30,8 +30,10 @@ func (ai *AI) solve(player Color, timeLimit int) (int, int) {
 	var maxTrials = 0
 
 	for _, child := range root.Children {
-		fmt.Println("Trials")
-		fmt.Println(child.Trials)
+		/*
+			fmt.Println("Trials")
+			fmt.Println(child.Trials)
+		*/
 		if child.Trials > maxTrials {
 			maxTrials = child.Trials
 			maxChild = child
@@ -40,29 +42,35 @@ func (ai *AI) solve(player Color, timeLimit int) (int, int) {
 
 	b := maxChild.Game.Board
 	coord := b.History[b.Turns-1]
-	fmt.Println("maxChild")
-	fmt.Println(maxChild)
-	fmt.Println(b.Turns)
-	fmt.Println(b.History)
+	/*
+		fmt.Println("maxChild")
+		fmt.Println(maxChild)
+		fmt.Println(b.Turns)
+		fmt.Println(b.History)
+	*/
 
 	return coord.X, coord.Y
 }
 
 // TODO: time limited mcts
-func mcts(root *Node, player Color, mctsC float64) {
-	fmt.Println("mcts")
-	fmt.Println(root.Game.Turn)
-	fmt.Println(player)
+func mcts(root *Node, player Color, mctsC float64, mctsT int) {
+	/*
+		fmt.Println("mcts")
+		fmt.Println(root.Game.Turn)
+		fmt.Println(player)
+	*/
 
+	// TODO: Judgeは生きてるけど意思決定が微妙(リーチ場所に打たない)
 	var maxNode, node *Node
 	var winner Color
 	var win, draw int
 
 	//	for {
-	for i := 0; i < 5000; i++ {
-		if i%1000 == 0 {
-			fmt.Println(root)
+	for i := 0; i < 20000; i++ {
+		if i%10000 == 0 {
+			// fmt.Println(root)
 		}
+
 		maxNode = chooseMaxNode(root, mctsC)
 
 		// playout
@@ -92,6 +100,10 @@ func mcts(root *Node, player Color, mctsC float64) {
 
 			node = node.Parent
 		}
+
+		if len(maxNode.Children) == 0 && maxNode.Trials >= mctsT {
+			maxNode.expandChildren()
+		}
 	}
 }
 
@@ -102,26 +114,26 @@ func chooseMaxNode(root *Node, mctsC float64) *Node {
 
 	maxNode := root
 	maxScore := 0.0
+	var score float64
+	var childMax *Node
 
 	for _, child := range root.Children {
+		childMax = chooseMaxNode(child, mctsC)
+
 		// Playout every initial nodes first
-		if !child.Played {
-			return child
+		if !childMax.Played {
+			return childMax
 		}
 
-		score := child.mctsFactor(root.Trials, mctsC)
+		score = childMax.mctsFactor(root.Trials, mctsC)
 
 		if score > maxScore {
-			maxNode = child
+			maxNode = childMax
 			maxScore = score
 		}
 	}
 
 	return maxNode
-}
-
-func shouldExpand(node *Node) bool {
-	return false
 }
 
 func (node *Node) playout() (winner Color) {

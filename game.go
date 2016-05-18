@@ -18,6 +18,10 @@ func (g *Game) move(x, y int) (err error) {
 	return err
 }
 
+func (g *Game) updateFrees(x, y int) error {
+
+}
+
 func (g *Game) moveFree(f int) (err error) {
 	x := g.Frees[f].X
 	y := g.Frees[f].Y
