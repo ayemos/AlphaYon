@@ -1,6 +1,7 @@
 package main
 
 import (
+	//	"fmt"
 	"math"
 	"math/rand"
 	"time"
@@ -21,7 +22,7 @@ func (ai *AI) solve(player Color, timeLimit int) (int, int) {
 	root.expandChildren()
 
 	// use mcts to calculate next move
-	mcts(root, player, ai.MctsC, 100, timeLimit)
+	mcts(root, player, ai.MctsC, 500, timeLimit)
 
 	// choose child who has max score
 	var maxChild *MctsNode
@@ -59,7 +60,6 @@ func mcts(root *MctsNode, player Color, mctsC float64, mctsT int, timelimitSec i
 		fmt.Println(player)
 	*/
 
-	// TODO: Judgeは生きてるけど意思決定が微妙(リーチ場所に打たない)
 	var maxNode, node *MctsNode
 	var winner Color
 	var win, draw int
@@ -67,6 +67,7 @@ func mcts(root *MctsNode, player Color, mctsC float64, mctsT int, timelimitSec i
 
 	startTime := time.Now()
 
+	//for i := 0; i < 1000; i++ {
 	for i := 0; ; i++ {
 		if i%100 == 0 {
 			diffSec = time.Now().Sub(startTime).Seconds()

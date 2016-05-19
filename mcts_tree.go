@@ -94,7 +94,7 @@ func repMctsNode(n MctsNode, depth int) string {
 	return string(str)
 }
 
-func buildString(n MctsNode, depth int) string {
+func (n MctsNode) buildString(depth int) string {
 	str := make([]byte, 0)
 
 	for i := 0; i < depth; i++ {
@@ -104,7 +104,7 @@ func buildString(n MctsNode, depth int) string {
 	str = append(str, repMctsNode(n, depth)...)
 
 	for _, child := range n.Children {
-		str = append(str, buildString(*child, depth+1)...)
+		str = append(str, child.buildString(depth+1)...)
 	}
 
 	return string(str)
@@ -112,6 +112,6 @@ func buildString(n MctsNode, depth int) string {
 
 func (n MctsNode) String() string {
 	str := make([]byte, 0)
-	str = append(str, buildString(n, 0)...)
+	str = append(str, n.buildString(0)...)
 	return string(str)
 }
