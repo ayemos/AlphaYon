@@ -15,11 +15,30 @@ func (g *Game) move(x, y int) (err error) {
 		g.Turn = BLACK
 	}
 
+	if g.PinsHeights[x][y] == g.Radius {
+		g.updateFrees(x, y)
+	}
+
 	return err
 }
 
 func (g *Game) updateFrees(x, y int) error {
+	var target int
 
+	for i, f := range g.Frees {
+		if x == f.X && y == f.Y {
+			target = i
+			break
+		}
+	}
+
+	g.FreesCount--
+
+	if g.FreesCount >= 0 {
+		g.Frees[target] = g.Frees[g.FreesCount]
+	}
+
+	return nil
 }
 
 func (g *Game) moveFree(f int) (err error) {

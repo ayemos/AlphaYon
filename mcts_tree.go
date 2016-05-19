@@ -8,23 +8,23 @@ type MCTSRecord struct {
 	Wins, Draws, Trials int
 }
 
-type Tree struct {
-	Root *Node
+type MctsTree struct {
+	Root *MctsNode
 }
 
-type Node struct {
+type MctsNode struct {
 	Game     *Game
-	Children []*Node
-	Parent   *Node
+	Children []*MctsNode
+	Parent   *MctsNode
 	MCTSRecord
 	Coord
 	Played bool
 }
 
-func NewNode(game *Game) *Node {
-	node := &Node{
+func NewMctsNode(game *Game) *MctsNode {
+	node := &MctsNode{
 		Game:       game,
-		Children:   []*Node{},
+		Children:   []*MctsNode{},
 		Parent:     nil,
 		MCTSRecord: MCTSRecord{0, 0, 0},
 		Coord:      Coord{-1, -1},
@@ -34,7 +34,7 @@ func NewNode(game *Game) *Node {
 	return node
 }
 
-func (node *Node) root() *Node {
+func (node *MctsNode) root() *MctsNode {
 	if node.Parent == nil {
 		return node
 	} else {
@@ -42,23 +42,23 @@ func (node *Node) root() *Node {
 	}
 }
 
-func (node *Node) appendChild(child *Node) error {
+func (node *MctsNode) appendChild(child *MctsNode) error {
 	child.Parent = node
 	node.Children = append(node.Children, child)
 	return nil
 }
 
-func NewTree(game *Game) *Tree {
-	root := NewNode(game)
+func NewMctsTree(game *Game) *MctsTree {
+	root := NewMctsNode(game)
 
-	tree := &Tree{
+	tree := &MctsTree{
 		Root: root,
 	}
 
 	return tree
 }
 
-func repNode(n Node, depth int) string {
+func repMctsNode(n MctsNode, depth int) string {
 	str := make([]byte, 0)
 	str = append(str, "Node(\n"...)
 
@@ -94,14 +94,14 @@ func repNode(n Node, depth int) string {
 	return string(str)
 }
 
-func buildString(n Node, depth int) string {
+func buildString(n MctsNode, depth int) string {
 	str := make([]byte, 0)
 
 	for i := 0; i < depth; i++ {
 		str = append(str, '\t')
 	}
 
-	str = append(str, repNode(n, depth)...)
+	str = append(str, repMctsNode(n, depth)...)
 
 	for _, child := range n.Children {
 		str = append(str, buildString(*child, depth+1)...)
@@ -110,7 +110,7 @@ func buildString(n Node, depth int) string {
 	return string(str)
 }
 
-func (n Node) String() string {
+func (n MctsNode) String() string {
 	str := make([]byte, 0)
 	str = append(str, buildString(n, 0)...)
 	return string(str)
