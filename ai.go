@@ -107,12 +107,19 @@ func mcts(root *MctsNode, player Color, mctsC float64, mctsT int, timelimitSec i
 			node = node.Parent
 		}
 
-		if len(maxNode.Children) == 0 &&
-			maxNode.Trials >= mctsT &&
-			maxNode.Game.FreesCount > 0 {
+		if shouldExpand(maxNode) {
 			maxNode.expandChildren()
 		}
 	}
+}
+
+func shouldExpand(n *MctsNode) bool {
+	// Use Alpha-Beta to decide.
+
+	return len(n.Children) == 0 &&
+		n.Trials >= mctsT &&
+		n.Game.FreesCount > 0 &&
+		Judge(n.Game.Board) == EMPTY
 }
 
 func chooseMaxNode(root *MctsNode, mctsC float64) *MctsNode {
