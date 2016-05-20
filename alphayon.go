@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+
+	alphaYon "github.com/ayemos/AlphaYon/lib"
 )
 
 var sc = bufio.NewScanner(os.Stdin)
