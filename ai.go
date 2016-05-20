@@ -1,8 +1,7 @@
 package main
 
 import (
-	//	"fmt"
-	"github.com/ayemos/AlphaYon/ai"
+//	"fmt"
 )
 
 type AI struct {
