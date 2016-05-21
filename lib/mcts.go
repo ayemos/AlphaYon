@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func Mcts(root *MctsNode, player Color, mctsC float64, mctsT int, timelimitSec int) {
+func Mcts(root *MctsNode, player Color, mctsC float64, mctsT int, timeLimitSec int) {
 	root.expandChildren()
 
 	/*
@@ -27,7 +27,7 @@ func Mcts(root *MctsNode, player Color, mctsC float64, mctsT int, timelimitSec i
 		if i%100 == 0 {
 			diffSec = time.Now().Sub(startTime).Seconds()
 
-			if diffSec >= float64(timelimitSec) {
+			if diffSec >= float64(timeLimitSec) {
 				break
 			}
 		}
@@ -62,7 +62,7 @@ func Mcts(root *MctsNode, player Color, mctsC float64, mctsT int, timelimitSec i
 			node = node.Parent
 		}
 
-		if shouldExpand(maxNode) {
+		if shouldExpand(maxNode, mctsT) {
 			maxNode.expandChildren()
 		}
 	}
@@ -97,7 +97,7 @@ func chooseMaxNode(root *MctsNode, mctsC float64) *MctsNode {
 	return maxNode
 }
 
-func shouldExpand(n *MctsNode) bool {
+func shouldExpand(n *MctsNode, mctsT int) bool {
 	// Use Alpha-Beta to decide.
 
 	return len(n.Children) == 0 &&
@@ -142,7 +142,7 @@ func (node *MctsNode) expandChildren() {
 			Board:  newBoard,
 		}
 
-		newGame.moveFree(i)
+		newGame.MoveFree(i)
 
 		child := NewMctsNode(newGame)
 
@@ -151,7 +151,7 @@ func (node *MctsNode) expandChildren() {
 }
 
 func tryRandomMove(game *Game) {
-	game.moveFree(rand.Intn(game.Board.FreesCount))
+	game.MoveFree(rand.Intn(game.Board.FreesCount))
 }
 
 func (node *MctsNode) mctsFactor(n int, mctsC float64) float64 {

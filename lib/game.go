@@ -1,4 +1,4 @@
-package main
+package alphaYon
 
 type Game struct {
 	Winner Color
@@ -6,7 +6,7 @@ type Game struct {
 	*Board
 }
 
-func (g *Game) move(x, y int) (err error) {
+func (g *Game) Move(x, y int) (err error) {
 	err = g.push(x, y, g.Turn)
 
 	if g.Turn == BLACK {
@@ -41,7 +41,7 @@ func (g *Game) updateFrees(x, y int) error {
 	return nil
 }
 
-func (g *Game) moveFree(f int) (err error) {
+func (g *Game) MoveFree(f int) (err error) {
 	x := g.Frees[f].X
 	y := g.Frees[f].Y
 
@@ -51,7 +51,7 @@ func (g *Game) moveFree(f int) (err error) {
 		g.Frees[f] = g.Frees[g.FreesCount]
 	}
 
-	err = g.move(x, y)
+	err = g.Move(x, y)
 
 	return err
 }

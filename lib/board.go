@@ -1,4 +1,4 @@
-package main
+package alphaYon
 
 import (
 	"fmt"
@@ -16,6 +16,9 @@ const (
 	BLACK
 )
 
+/*
+Board is a game board.
+*/
 type Board struct {
 	Radius int
 
@@ -25,12 +28,14 @@ type Board struct {
 	History []Coord
 
 	/*
-	 * TODO: Free positions are begin managed by game.moveFree
-	 * and it's not the best way.
-	 * Note that free positions would only be used by AI and its MCTS.
-	 * (using more naive way is enough for displaying free posiions or
-	 * other use cases.)
-	 */
+		TODO: Free positions are being managed by game.MoveFree
+		and it's not the best way.
+	*/
+	/*
+		Note that free positions would only be used by AI and its MCTS.
+		(using more naive way is enough for displaying free posiions or
+		other use cases.)
+	*/
 	Frees      []Coord
 	FreesCount int
 
@@ -166,7 +171,7 @@ func CopyBoard(src *Board) *Board {
 	}
 }
 
-func (b Board) pretty() {
+func (b Board) Pretty() {
 	fmt.Printf("+++++Pretty Board+++++\n")
 	fmt.Println(hDump(b, 0))
 	fmt.Printf("++++++++++++++++++++++\n")

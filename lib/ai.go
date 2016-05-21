@@ -1,4 +1,4 @@
-package main
+package alphaYon
 
 import (
 //	"fmt"
@@ -10,7 +10,25 @@ type AI struct {
 	MctsTree *MctsTree
 }
 
-func (ai *AI) solve(player Color, timeLimit int) (int, int) {
+const (
+	// TODO: Comment
+	DefaultTimeLimit = 3
+	DefaultMCTSC     = 0.5
+)
+
+func NewAI(game *Game, mctsC float64) *AI {
+	tree := NewMctsTree(game)
+
+	ai := &AI{
+		Game:     game,
+		MctsC:    mctsC,
+		MctsTree: tree,
+	}
+
+	return ai
+}
+
+func (ai *AI) Solve(player Color, timeLimit int) (int, int) {
 	// TODO: handle timeLimit
 
 	// create root node according to game state
@@ -30,7 +48,7 @@ func (ai *AI) solve(player Color, timeLimit int) (int, int) {
 			fmt.Println("Trials")
 			fmt.Println(child.Trials)
 		*/
-		if child.Trials > maxTrials {
+		if child.Trials >= maxTrials {
 			maxTrials = child.Trials
 			maxChild = child
 		}
@@ -46,16 +64,4 @@ func (ai *AI) solve(player Color, timeLimit int) (int, int) {
 	*/
 
 	return coord.X, coord.Y
-}
-
-func NewAI(game *Game, mctsC float64) *AI {
-	tree := NewMctsTree(game)
-
-	ai := &AI{
-		Game:     game,
-		MctsC:    mctsC,
-		MctsTree: tree,
-	}
-
-	return ai
 }
