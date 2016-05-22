@@ -22,6 +22,10 @@ const (
 func (g *Game) Move(x, y int) (err error) {
 	err = g.push(x, y, g.Turn)
 
+	if err != nil {
+		return err
+	}
+
 	if g.Turn == BLACK {
 		g.Turn = WHITE
 	} else if g.Turn == WHITE {
@@ -32,7 +36,7 @@ func (g *Game) Move(x, y int) (err error) {
 		g.updateFrees(x, y)
 	}
 
-	return err
+	return nil
 }
 
 func (g *Game) updateFrees(x, y int) error {
@@ -58,6 +62,18 @@ func (g *Game) MoveFree(f int) (err error) {
 	x := g.Frees[f].X
 	y := g.Frees[f].Y
 
+	err = g.push(x, y, g.Turn)
+
+	if err != nil {
+		return err
+	}
+
+	if g.Turn == BLACK {
+		g.Turn = WHITE
+	} else if g.Turn == WHITE {
+		g.Turn = BLACK
+	}
+
 	if g.PinsHeights[x][y] == g.Radius {
 		// position (x, y) was filled
 		if f < 0 || g.FreesCount < 0 {
@@ -70,15 +86,7 @@ func (g *Game) MoveFree(f int) (err error) {
 		g.Frees[f] = g.Frees[g.FreesCount]
 	}
 
-	err = g.push(x, y, g.Turn)
-
-	if g.Turn == BLACK {
-		g.Turn = WHITE
-	} else if g.Turn == WHITE {
-		g.Turn = BLACK
-	}
-
-	return err
+	return nil
 }
 
 func Judge(b *Board) (status GameStatus) {

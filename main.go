@@ -86,6 +86,6 @@ func main() {
 
 const examples = `
 examples:
-  alphaYon onePlayer -mctsC=0.3 -timeLimit=5
-  alphaYon noPlayer -mctsCA=0.3 -mctsCB=0.7 -timeLimitA=5 -timeLimitB=3
+  alphaYon one_player -mctsC=0.3 -timeLimit=5
+  alphaYon no_players -mctsCA=0.3 -mctsCB=0.7 -timeLimitA=5 -timeLimitB=3
 `

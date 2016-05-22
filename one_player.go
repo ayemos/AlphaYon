@@ -13,6 +13,8 @@ func onePlayerCmd() command {
 	opts := &onePlayerOpts{}
 
 	fs.Float64Var(&opts.mctsC, "mctsC", alphaYon.DefaultMCTSC, "C factor of MCTS for AI.")
+	fs.IntVar(&opts.mctsT, "mctsT", alphaYon.DefaultMCTST, "T factor of MCTS for AI.")
+	fs.IntVar(&opts.timeLimit, "searchDepth", alphaYon.DefaultSearchDepth, "Search depth for AI")
 	fs.IntVar(&opts.timeLimit, "timeLimit", alphaYon.DefaultTimeLimit, "Time limit for AI")
 
 	return command{fs, func(args []string) error {
@@ -23,7 +25,7 @@ func onePlayerCmd() command {
 
 func onePlayer(opts *onePlayerOpts) error {
 	game := alphaYon.NewGame(alphaYon.WHITE, 4)
-	ai := alphaYon.NewAI(game, opts.mctsC) // MCTS_C
+	ai := alphaYon.NewAI(game, opts.mctsC, opts.mctsT)
 	sc.Split(bufio.ScanWords)
 
 	var err error
@@ -55,7 +57,7 @@ func onePlayer(opts *onePlayerOpts) error {
 
 		fmt.Println("AI is thinking...")
 
-		aiX, aiY := ai.Solve(game.Turn, opts.timeLimit)
+		aiX, aiY := ai.Solve(game.Turn, opts.timeLimit, opts.searchDepth)
 
 		// AI turn
 		err = game.Move(aiX, aiY)
@@ -76,6 +78,8 @@ func onePlayer(opts *onePlayerOpts) error {
 }
 
 type onePlayerOpts struct {
-	mctsC     float64
-	timeLimit int
+	mctsC       float64
+	mctsT       int
+	timeLimit   int
+	searchDepth int
 }

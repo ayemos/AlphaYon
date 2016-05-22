@@ -8,19 +8,31 @@ type ABTree struct {
 	Root *ABNode
 }
 
+type ABNodeStatus int
+
 type ABNode struct {
 	Game     *Game
 	Children []*ABNode
 	Parent   *ABNode
 	Coord
+	ABNodeStatus
+	Depth int
 }
+
+const (
+	WINNING ABNodeStatus = iota
+	LOSING
+	UNKNOWN
+)
 
 func NewABNode(game *Game) *ABNode {
 	node := &ABNode{
-		Game:     game,
-		Children: []*ABNode{},
-		Parent:   nil,
-		Coord:    Coord{-1, -1},
+		Game:         game,
+		Children:     []*ABNode{},
+		Parent:       nil,
+		Coord:        Coord{-1, -1},
+		ABNodeStatus: UNKNOWN,
+		Depth:        game.Board.Turns,
 	}
 
 	return node
@@ -58,6 +70,8 @@ func repABNode(n ABNode, depth int) string {
 		str = append(str, fmt.Sprintf("\t")...)
 	}
 
+	str = append(str, fmt.Sprintf("\tStatus: %s\n", n.ABNodeStatus)...)
+
 	str = append(str, fmt.Sprintf(hDump(*n.Game.Board, depth+1))...)
 
 	str = append(str, ")\n"...)
@@ -84,4 +98,17 @@ func (n ABNode) String() string {
 	str := make([]byte, 0)
 	str = append(str, n.buildString(0)...)
 	return string(str)
+}
+
+func (n *MctsNode) convToABNode() (ab *ABNode) {
+	node := &ABNode{
+		Game:         CopyGame(n.Game),
+		Children:     []*ABNode{},
+		Parent:       nil,
+		Coord:        Coord{-1, -1},
+		ABNodeStatus: UNKNOWN,
+		Depth:        n.Game.Board.Turns,
+	}
+
+	return node
 }

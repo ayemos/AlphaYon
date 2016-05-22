@@ -1,13 +1,14 @@
 package alphaYon
 
 import (
+	//	"fmt"
 	"math"
 	"math/rand"
 	"time"
 )
 
-func Mcts(root *MctsNode, player Color, mctsC float64, mctsT int, timeLimitSec int) {
-	root.expandChildren()
+func Mcts(root *MctsNode, player Color, mctsC float64, mctsT int, timeLimitSec int, searchDepth int) {
+	root.expandChildren(player, searchDepth)
 
 	/*
 		fmt.Println("mcts")
@@ -34,9 +35,10 @@ func Mcts(root *MctsNode, player Color, mctsC float64, mctsT int, timeLimitSec i
 
 		maxNode = chooseMaxNode(root, mctsC)
 
-		// playout
 		// TODO: なんとかする
+		// playout
 		status = maxNode.playout()
+
 		if (root.Game.Turn == BLACK && status == BLACK_WON) ||
 			(root.Game.Turn == WHITE && status == WHITE_WON) {
 			win = 1
@@ -65,8 +67,8 @@ func Mcts(root *MctsNode, player Color, mctsC float64, mctsT int, timeLimitSec i
 			node = node.Parent
 		}
 
-		if shouldExpand(maxNode, mctsT) {
-			maxNode.expandChildren()
+		if shouldExpand(maxNode, player, mctsT) {
+			maxNode.expandChildren(player, searchDepth)
 		}
 	}
 }
@@ -79,9 +81,15 @@ func chooseMaxNode(root *MctsNode, mctsC float64) *MctsNode {
 	maxNode := root
 	maxScore := 0.0
 	var score float64
-	var childMax *MctsNode
+	var child, childMax *MctsNode
+	var j int
+	l := len(root.Children)
+	c := rand.Intn(l)
 
-	for _, child := range root.Children {
+	for i := 0; i < l; i++ {
+		j = (i + c) % l
+		child = root.Children[j]
+
 		childMax = chooseMaxNode(child, mctsC)
 
 		// Playout every initial nodes first
@@ -100,11 +108,9 @@ func chooseMaxNode(root *MctsNode, mctsC float64) *MctsNode {
 	return maxNode
 }
 
-func shouldExpand(n *MctsNode, mctsT int) bool {
-	// Use Alpha-Beta to decide.
-
-	return len(n.Children) == 0 &&
-		n.Trials >= mctsT &&
+func shouldExpand(n *MctsNode, player Color, mctsT int) bool {
+	return n.Trials >= mctsT &&
+		len(n.Children) == 0 &&
 		n.Game.FreesCount > 0 &&
 		Judge(n.Game.Board) == RUNNING
 }
@@ -135,8 +141,14 @@ func (node *MctsNode) playout() (status GameStatus) {
 	}
 }
 
-func (node *MctsNode) expandChildren() {
-	for i := range node.Game.Board.Frees {
+func (node *MctsNode) expandChildren(player Color, searchDepth int) error {
+	l := node.Game.Board.FreesCount
+	c := rand.Intn(l)
+	var j int
+
+	for i := 0; i < l; i++ {
+		j = (i + c) % l // randomize i
+
 		newBoard := CopyBoard(node.Game.Board)
 
 		newGame := &Game{
@@ -145,12 +157,37 @@ func (node *MctsNode) expandChildren() {
 			Board:  newBoard,
 		}
 
-		newGame.MoveFree(i)
+		newGame.MoveFree(j)
 
 		child := NewMctsNode(newGame)
 
-		node.appendChild(child)
+		//		fmt.Println(child)
+		//		now := time.Now()
+		searchResult, err := Search(child.convToABNode(), player, searchDepth)
+		//		fmt.Println("TIME", ":", time.Now().Sub(now))
+
+		if err != nil {
+			return err
+		}
+
+		/*
+			if *searchResult == LOSING {
+				fmt.Println("LOSING!")
+				fmt.Println(node)
+			}
+
+			if *searchResult == WINNING {
+				fmt.Println("WINNING!")
+				fmt.Println(node)
+			}
+		*/
+
+		if *searchResult != LOSING {
+			node.appendChild(child)
+		}
 	}
+
+	return nil
 }
 
 func tryRandomMove(game *Game) {

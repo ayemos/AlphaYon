@@ -229,28 +229,6 @@ var boardsToTest = []boardTest{
 			'.', 'w', '.', '.',
 			'.', 'w', 'w', 'w',
 			'.', 'w', 'b', '.'}, BLACK_WON},
-
-	boardTest{
-		[]rune{
-			'w', 'w', 'b', 'w',
-			'b', 'b', 'w', 'w',
-			'b', 'b', 'w', 'b',
-			'b', 'b', 'b', 'w',
-
-			'w', 'w', 'b', 'b',
-			'b', 'b', 'w', 'w',
-			'b', 'b', 'b', 'w',
-			'w', 'b', 'w', 'b',
-
-			'b', 'w', 'b', 'w',
-			'b', 'w', 'b', 'b',
-			'w', 'b', 'b', 'b',
-			'w', 'b', 'w', 'b',
-
-			'b', 'b', 'w', 'b',
-			'w', 'w', 'b', 'w',
-			'b', 'w', 'w', 'w',
-			'w', 'w', 'b', 'w'}, DRAW},
 }
 
 func TestJudge(t *testing.T) {
