@@ -27,7 +27,7 @@ func onePlayer(opts *onePlayerOpts) error {
 	sc.Split(bufio.ScanWords)
 
 	var err error
-	var winner alphaYon.Color
+	var status alphaYon.GameStatus
 
 	for {
 		for {
@@ -46,10 +46,10 @@ func onePlayer(opts *onePlayerOpts) error {
 
 		game.Pretty()
 
-		winner = alphaYon.Judge(game.Board)
+		status = alphaYon.Judge(game.Board)
 
-		if winner != alphaYon.EMPTY {
-			fmt.Printf("%s Won!\n", winner)
+		if status != alphaYon.RUNNING {
+			fmt.Println(status)
 			return nil
 		}
 
@@ -66,10 +66,10 @@ func onePlayer(opts *onePlayerOpts) error {
 
 		game.Pretty()
 
-		winner = alphaYon.Judge(game.Board)
+		status = alphaYon.Judge(game.Board)
 
-		if winner != alphaYon.EMPTY {
-			fmt.Printf("%s Won!\n", winner)
+		if status != alphaYon.RUNNING {
+			fmt.Println(status)
 			return nil
 		}
 	}

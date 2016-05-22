@@ -16,7 +16,7 @@ func Mcts(root *MctsNode, player Color, mctsC float64, mctsT int, timeLimitSec i
 	*/
 
 	var maxNode, node *MctsNode
-	var winner Color
+	var status GameStatus
 	var win, draw int
 	var diffSec float64
 
@@ -35,14 +35,17 @@ func Mcts(root *MctsNode, player Color, mctsC float64, mctsT int, timeLimitSec i
 		maxNode = chooseMaxNode(root, mctsC)
 
 		// playout
-		winner = maxNode.playout()
-		if winner == root.Game.Turn {
+		// TODO: なんとかする
+		status = maxNode.playout()
+		if (root.Game.Turn == BLACK && status == BLACK_WON) ||
+			(root.Game.Turn == WHITE && status == WHITE_WON) {
 			win = 1
 			draw = 0
-		} else if winner == EMPTY {
+		} else if status == DRAW {
 			win = 0
 			draw = 1
 		} else {
+			// error ?
 			win = 0
 			draw = 0
 		}
@@ -103,10 +106,10 @@ func shouldExpand(n *MctsNode, mctsT int) bool {
 	return len(n.Children) == 0 &&
 		n.Trials >= mctsT &&
 		n.Game.FreesCount > 0 &&
-		Judge(n.Game.Board) == EMPTY
+		Judge(n.Game.Board) == RUNNING
 }
 
-func (node *MctsNode) playout() (winner Color) {
+func (node *MctsNode) playout() (status GameStatus) {
 	node.Played = true
 	game := CopyGame(node.Game)
 
@@ -116,16 +119,16 @@ func (node *MctsNode) playout() (winner Color) {
 	for {
 		//fmt.Println("current board")
 		//fmt.Println(hDump(*game.Board, 0))
-		winner = Judge(game.Board)
+		status = Judge(game.Board)
 
-		if winner != EMPTY {
+		if status != RUNNING {
 			// fmt.Printf("%s won!\n", winner)
 
-			return winner
+			return status
 		}
 
 		if game.FreesCount <= 0 {
-			return EMPTY
+			return RUNNING
 		}
 
 		tryRandomMove(game)
@@ -137,7 +140,7 @@ func (node *MctsNode) expandChildren() {
 		newBoard := CopyBoard(node.Game.Board)
 
 		newGame := &Game{
-			Winner: node.Game.Winner,
+			Status: node.Game.Status,
 			Turn:   node.Game.Turn,
 			Board:  newBoard,
 		}

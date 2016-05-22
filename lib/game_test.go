@@ -6,7 +6,7 @@ import (
 
 type boardTest struct {
 	pins   []rune
-	winner Color
+	status GameStatus
 }
 
 var boardsToTest = []boardTest{
@@ -30,7 +30,7 @@ var boardsToTest = []boardTest{
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
-			'.', '.', '.', '.'}, EMPTY},
+			'.', '.', '.', '.'}, RUNNING},
 
 	boardTest{
 		[]rune{
@@ -52,7 +52,7 @@ var boardsToTest = []boardTest{
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
-			'.', '.', '.', '.'}, EMPTY},
+			'.', '.', '.', '.'}, RUNNING},
 
 	boardTest{
 		[]rune{
@@ -74,7 +74,7 @@ var boardsToTest = []boardTest{
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
-			'.', '.', '.', '.'}, BLACK},
+			'.', '.', '.', '.'}, BLACK_WON},
 
 	boardTest{
 		[]rune{
@@ -96,7 +96,7 @@ var boardsToTest = []boardTest{
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
-			'.', '.', '.', '.'}, WHITE},
+			'.', '.', '.', '.'}, WHITE_WON},
 
 	boardTest{
 		[]rune{
@@ -118,7 +118,7 @@ var boardsToTest = []boardTest{
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
-			'.', '.', '.', '.'}, BLACK},
+			'.', '.', '.', '.'}, BLACK_WON},
 
 	boardTest{
 		[]rune{
@@ -140,7 +140,7 @@ var boardsToTest = []boardTest{
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
-			'.', '.', '.', '.'}, BLACK},
+			'.', '.', '.', '.'}, BLACK_WON},
 
 	boardTest{
 		[]rune{
@@ -162,7 +162,7 @@ var boardsToTest = []boardTest{
 			'b', '.', '.', '.',
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
-			'.', '.', '.', '.'}, BLACK},
+			'.', '.', '.', '.'}, BLACK_WON},
 
 	boardTest{
 		[]rune{
@@ -184,7 +184,7 @@ var boardsToTest = []boardTest{
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
-			'.', '.', '.', 'b'}, BLACK},
+			'.', '.', '.', 'b'}, BLACK_WON},
 
 	boardTest{
 		[]rune{
@@ -206,7 +206,7 @@ var boardsToTest = []boardTest{
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
 			'.', '.', '.', '.',
-			'.', '.', '.', '.'}, WHITE},
+			'.', '.', '.', '.'}, WHITE_WON},
 
 	boardTest{
 		[]rune{
@@ -228,7 +228,29 @@ var boardsToTest = []boardTest{
 			'.', '.', 'w', '.',
 			'.', 'w', '.', '.',
 			'.', 'w', 'w', 'w',
-			'.', 'w', 'b', '.'}, BLACK},
+			'.', 'w', 'b', '.'}, BLACK_WON},
+
+	boardTest{
+		[]rune{
+			'w', 'w', 'b', 'w',
+			'b', 'b', 'w', 'w',
+			'b', 'b', 'w', 'b',
+			'b', 'b', 'b', 'w',
+
+			'w', 'w', 'b', 'b',
+			'b', 'b', 'w', 'w',
+			'b', 'b', 'b', 'w',
+			'w', 'b', 'w', 'b',
+
+			'b', 'w', 'b', 'w',
+			'b', 'w', 'b', 'b',
+			'w', 'b', 'b', 'b',
+			'w', 'b', 'w', 'b',
+
+			'b', 'b', 'w', 'b',
+			'w', 'w', 'b', 'w',
+			'b', 'w', 'w', 'w',
+			'w', 'w', 'b', 'w'}, DRAW},
 }
 
 func TestJudge(t *testing.T) {
@@ -240,10 +262,10 @@ func TestJudge(t *testing.T) {
 			t.Errorf("Setup error: %s.", err)
 		}
 
-		winner := Judge(b)
+		status := Judge(b)
 
-		if winner != test.winner {
-			t.Errorf("Judge(%s) = %s, want %s.", b, winner, test.winner)
+		if status != test.status {
+			t.Errorf("Judge(%s) = %s, want %s.", b, status, test.status)
 		}
 	}
 }

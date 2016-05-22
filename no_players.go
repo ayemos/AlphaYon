@@ -18,7 +18,6 @@ func noPlayersCmd() command {
 	fs.IntVar(&opts.timeLimitB, "timeLimitB", alphaYon.DefaultTimeLimit, "Time limit for AI B")
 	fs.BoolVar(&opts.resultOnly, "resultOnly", false, "Print result only.")
 
-	fmt.Println(opts)
 	return command{fs, func(args []string) error {
 		fs.Parse(args)
 		return noPlayers(opts)
@@ -32,48 +31,60 @@ func noPlayers(opts *noPlayersOpts) error {
 	aiB := alphaYon.NewAI(game, opts.mctsCB)
 
 	var err error
-	var winner alphaYon.Color
+	var status alphaYon.GameStatus
 	var aiX, aiY int
 
 	for {
-		fmt.Println("AI A is thinking...")
+		if !opts.resultOnly {
+			fmt.Println("AI A is thinking...")
+		}
 		aiX, aiY = aiA.Solve(game.Turn, opts.timeLimitA)
 
 		err = game.Move(aiX, aiY)
 
 		if err != nil {
 			fmt.Printf("%s\n", err)
+			return err
 		}
 
-		game.Pretty()
-
-		winner = alphaYon.Judge(game.Board)
-
-		if winner != alphaYon.EMPTY {
-			fmt.Printf("%s Won!\n", winner)
-			//			return winner
+		if !opts.resultOnly {
+			game.Pretty()
 		}
 
-		fmt.Println("AI B is thinking...")
+		status = alphaYon.Judge(game.Board)
+
+		if status != alphaYon.RUNNING {
+			fmt.Println(status)
+
+			return nil
+		}
+
+		if !opts.resultOnly {
+			fmt.Println("AI B is thinking...")
+		}
+
 		aiX, aiY = aiB.Solve(game.Turn, opts.timeLimitB)
 
 		err = game.Move(aiX, aiY)
 
 		if err != nil {
 			fmt.Printf("%s\n", err)
+			return err
 		}
 
-		game.Pretty()
+		if !opts.resultOnly {
+			game.Pretty()
+		}
 
-		winner = alphaYon.Judge(game.Board)
+		status = alphaYon.Judge(game.Board)
 
-		if winner != alphaYon.EMPTY {
-			fmt.Printf("%s Won!\n", winner)
-			//			return winner
+		if status != alphaYon.RUNNING {
+			fmt.Println(status)
+
+			return nil
 		}
 	}
 
-	//	return alphaYon.EMPTY
 	return nil
 }
 

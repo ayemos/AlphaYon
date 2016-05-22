@@ -1,10 +1,23 @@
 package alphaYon
 
+import (
+	"fmt"
+)
+
+type GameStatus int
+
 type Game struct {
-	Winner Color
+	Status GameStatus
 	Turn   Color
 	*Board
 }
+
+const (
+	WHITE_WON GameStatus = iota
+	BLACK_WON
+	RUNNING
+	DRAW
+)
 
 func (g *Game) Move(x, y int) (err error) {
 	err = g.push(x, y, g.Turn)
@@ -47,52 +60,68 @@ func (g *Game) MoveFree(f int) (err error) {
 
 	if g.PinsHeights[x][y] == g.Radius {
 		// position (x, y) was filled
+		if f < 0 || g.FreesCount < 0 {
+			fmt.Println(g.Board)
+			fmt.Println(f)
+			fmt.Println(g.FreesCount)
+		}
+
 		g.FreesCount--
 		g.Frees[f] = g.Frees[g.FreesCount]
 	}
 
-	err = g.Move(x, y)
+	err = g.push(x, y, g.Turn)
+
+	if g.Turn == BLACK {
+		g.Turn = WHITE
+	} else if g.Turn == WHITE {
+		g.Turn = BLACK
+	}
 
 	return err
 }
 
-func Judge(b *Board) (winner Color) {
-	winner = EMPTY
+func Judge(b *Board) (status GameStatus) {
+	status = RUNNING
+
 	for x := 0; x < b.Radius; x++ {
 		for y := 0; y < b.Radius; y++ {
-			winner = judgeFromPoint(b, x, y, 0)
+			status = judgeFromPoint(b, x, y, 0)
 
-			if winner != EMPTY {
-				return winner
+			if status != RUNNING {
+				return status
 			}
 		}
 	}
 
-	winner = EMPTY
 	for x := 1; x < b.Radius; x++ {
 		for z := 1; z < b.Radius; z++ {
-			winner = judgeFromPoint(b, x, 0, z)
+			status = judgeFromPoint(b, x, 0, z)
 
-			if winner != EMPTY {
-				return winner
+			if status != RUNNING {
+				return status
 			}
 		}
 	}
 
 	for y := 0; y < b.Radius; y++ {
 		for z := 1; z < b.Radius; z++ {
-			winner = judgeFromPoint(b, 0, y, z)
+			status = judgeFromPoint(b, 0, y, z)
 
-			if winner != EMPTY {
-				return winner
+			if status != RUNNING {
+				return status
 			}
 		}
 	}
 
-	return EMPTY
+	if b.FreesCount == 0 {
+		return DRAW
+	} else {
+		return RUNNING
+	}
 }
 
-func judgeFromPoint(b *Board, x, y, z int) (winner Color) {
+func judgeFromPoint(b *Board, x, y, z int) (winner GameStatus) {
 	var color Color
 	var count int
 	var tmpx, tmpy, tmpz int
@@ -141,7 +170,11 @@ func judgeFromPoint(b *Board, x, y, z int) (winner Color) {
 					count += 1
 
 					if count == b.Radius {
-						return color
+						if color == WHITE {
+							return WHITE_WON
+						} else {
+							return BLACK_WON
+						}
 					}
 				}
 
@@ -149,12 +182,12 @@ func judgeFromPoint(b *Board, x, y, z int) (winner Color) {
 		}
 	}
 
-	return EMPTY
+	return RUNNING
 }
 
 func CopyGame(src *Game) *Game {
 	return &Game{
-		Winner: src.Winner,
+		Status: src.Status,
 		Turn:   src.Turn,
 		Board:  CopyBoard(src.Board),
 	}
@@ -162,7 +195,7 @@ func CopyGame(src *Game) *Game {
 
 func NewGame(player Color, radius int) *Game {
 	game := &Game{
-		Winner: EMPTY,
+		Status: RUNNING,
 		Turn:   player,
 		Board:  NewBoard(radius),
 	}
